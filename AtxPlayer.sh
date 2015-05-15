@@ -10,9 +10,9 @@ syncOffset="0.3" # time to wait between launching audio and video, may need to c
 LufsHigh="170"
 LufsLow="220"
 # --- apps to use
-Dialog=~/Applications/Adtox-Player/CocoaDialog.app/Contents/MacOS/CocoaDialog
-r128x=~/Applications/Adtox-Player/audio-analyser/r128x-cli
-ffmpeg="/Applications/Adtox Encoder Libs 5.0/FFmpeg-1.2.1/ffmpeg" # this version supports chanellmapping, so mono detection works
+Dialog="/path/to/CocoaDialog.app/Contents/MacOS/CocoaDialog"
+r128x="/path/AtxPlayer/r128x-cli"
+ffmpeg="/path/to/ffmpeg" # version 1.2.1 supports chanellmapping, so mono detection works
 
 # to get a cleaner path
 InputDir="$1"
