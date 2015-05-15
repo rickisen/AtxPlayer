@@ -22,7 +22,7 @@ CurrentDir="$(pwd)"
 # set up the header in the temporary analysis results-file
 if [ ! -a .EbuValues.txt ]
 then
-        echo "FILE                                                         | LUFS   |   LU     |     dBTP "                                                     &gt; .EbuValues.txt
+        echo "FILE                                                         | LUFS   |   LU     |     dBTP "                                                     > .EbuValues.txt
 fi
 
 # main loop
@@ -45,34 +45,34 @@ do
                 open -a VLC -n "$CurrentDir"/"$videoFile" # -n to spawn a new process even though VLC is already running
 
                 # extract the active part of the audio for analysis, the ffmpeg command might need updating!!!
-                "$ffmpeg" -ss 10 -t "$duration" -i "$file" .temp.wav &gt; /dev/null
-                "$ffmpeg" -i .temp.wav -map_channel 0.0.0 .temp--left.wav -map_channel 0.0.1 .temp-right.wav &gt; /dev/null # two "--" on the left fix a bug
+                "$ffmpeg" -ss 10 -t "$duration" -i "$file" .temp.wav > /dev/null
+                "$ffmpeg" -i .temp.wav -map_channel 0.0.0 .temp--left.wav -map_channel 0.0.1 .temp-right.wav > /dev/null # two "--" on the left fix a bug
 
                 #Analyze the audio (and clean up the garbled output from r128x-cli)
-                "$r128x" .temp.wav |            grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp.wav"?"$nakedCode"?    &gt;&gt; .EbuValues.txt
-                "$r128x" .temp--left.wav |      grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp--left.wav"?""?        &gt; .left.txt
-                "$r128x" .temp-right.wav |      grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp-right.wav"?""?        &gt; .right.txt
+                "$r128x" .temp.wav |            grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp.wav"?"$nakedCode"?    >> .EbuValues.txt
+                "$r128x" .temp--left.wav |      grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp--left.wav"?""?        > .left.txt
+                "$r128x" .temp-right.wav |      grep "wav" | sed -e s?"\["?""?g -e s?"F"?""? -e s?"J"?""? -e s?"\^\[\^\["?""? -e s?".temp-right.wav"?""?        > .right.txt
 
                 # Do mono/stereo analysis on the audio results
                 left=$(md5 -q .left.txt)
                 right=$(md5 -q .right.txt)
                 if [ "$left" = "$right" ]
                 then
-                        echo "Warning, this file looks like it might be mono!"                                                                                  &gt;&gt; .EbuValues.txt
+                        echo "Warning, this file looks like it might be mono!"                                                                                  >> .EbuValues.txt
                 fi
 
                 # Do Loudness  analysis on the audio results
                 Lufs=$(cat .EbuValues.txt | grep "$nakedCode" | awk '{print $2}' | sed -e s?"-"?""?g -e s?"\."?""?) # find the lufs value in the results
                 if [[ "$Lufs" -lt "$LufsHigh" ]] # converted to positive insted of neagative. so it might look inverted
                 then
-                        echo "Loudness seams too High!"                                                                                                         &gt;&gt; .EbuValues.txt
+                        echo "Loudness seams too High!"                                                                                                         >> .EbuValues.txt
                 elif [[ "$Lufs" -ge "$LufsLow" ]]
                 then
-                        echo "Loudness seams too Low!"                                                                                                          &gt;&gt; .EbuValues.txt
+                        echo "Loudness seams too Low!"                                                                                                          >> .EbuValues.txt
                 fi
 
                 # new line for formatting reasons
-                echo ""                                                                                                                                         &gt;&gt; .EbuValues.txt
+                echo ""                                                                                                                                         >> .EbuValues.txt
 
                 #Launch the "GUI" Dialog and save the button pressed in the button variable
                 button=$("$Dialog" textbox --title "Adtox Player - "$nakedCode"" --text-from-file .EbuValues.txt --button1 "Next/Rename" --button2 "Next" --button3 "Quit all" --float)
